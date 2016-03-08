@@ -3,9 +3,11 @@ var app = express();
 
 app.set('view engine', 'jade');
 
-app.get('/', function(request, response) {
-    console.log("someone made a request.");
-    response.sendFile(__dirname + '/public/index');
+app.use(express.static('public'));
+
+app.get('/blocks', function(request, response) {
+    var blocks = ['Fixed', 'Movable', 'Rotating'];
+    response.json(blocks);
 });
 
 app.listen(3000, function() {
