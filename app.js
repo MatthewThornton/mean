@@ -7,9 +7,24 @@ app.use(express.static('public'));
 
 app.set('view engine', 'jade'); //TODO this doesn't work?
 
-app.get('/blocks', function(request, response) {
-    var blocks = ['Fixed', 'Movable', 'Rotating'];
-    response.json(blocks);
+var blocks = {
+    'Fixed': 'Fastened securely in position',
+    'Movable': 'Capable of being moved',
+    'Rotating': 'Moving in a circle around its center'
+};
+
+app.get('/blocks/:name', function(request, response) {
+    var description = blocks[request.params.name];
+    if (!description) {
+        response.status(404).json('No description found for ' + request.params.name);
+    }else{
+        response.json(description);
+    }
+    if (request.query.limit >= 0) {
+        response.json(blocks.slice(0, request.query.limit));
+    }else {
+        response.json(blocks);
+    }
 });
 
 app.listen(3000, function() {
