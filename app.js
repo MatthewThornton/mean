@@ -25,7 +25,7 @@ var locations = {
 // Middleware 'body-parser'.  Used to handel <form> data
 app.post('/blocks', parseUrlencoded, function(request, response){
     var newBlock = request.body;
-    blocks[newBlock.name] = newBlock.description;
+    blocks[newBlock.name] = newBlock.description; // <input name='name'><input name='description'>
 
     response.status(201).json(newBlock.name);
 });
