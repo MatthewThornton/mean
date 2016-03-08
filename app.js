@@ -1,9 +1,11 @@
 var express = require('express');
 var app = express();
 
-app.set('view engine', 'jade');
-
+var logger = require('./logger');
+app.use(logger);
 app.use(express.static('public'));
+
+app.set('view engine', 'jade'); //TODO this doesn't work?
 
 app.get('/blocks', function(request, response) {
     var blocks = ['Fixed', 'Movable', 'Rotating'];
