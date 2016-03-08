@@ -1,6 +1,9 @@
 var express = require('express');
 var app = express();
 
+var bodyParser = require('body-parser');
+var parseUrlencoded = bodyParser.urlencoded({ extended: false });
+
 var logger = require('./logger');
 app.use(logger);
 app.use(express.static('public'));
@@ -19,6 +22,16 @@ var locations = {
     'Rotating': 'Penthouse'
 };
 
+// Middleware 'body-parser'.  Used to handel <form> data
+app.post('/blocks', parseUrlencoded, function(request, response){
+    var newBlock = request.body;
+    blocks[newBlock.name] = newBlock.description;
+
+    response.status(201).json(newBlock.name);
+});
+
+
+// Post checks
 app.param('name', function(request, response, next){
     var name = request.params.name;
     var block = name[0].toUpperCase() + name.slice(1).toLowerCase();
@@ -28,6 +41,7 @@ app.param('name', function(request, response, next){
     next();
 });
 
+// Check block size
 app.get('/blocks', function(request, response){
     if (request.query.limit >= 0) {
         response.json(blocks.slice(0, request.query.limit));
@@ -36,6 +50,7 @@ app.get('/blocks', function(request, response){
     }
 });
 
+// Get block name and location name
 app.get('/blocks/:name', function(request, response) {
     var description = blocks[request.blockName];
     if (!description) {

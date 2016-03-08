@@ -12,6 +12,7 @@
   },
   "author": "Matthew Thornton",
   "dependencies": {
+    "body-parser": "^1.15.0",
     "express": ">= 0.0.1",
     "jade": "^1.11.0",
     "jquery": "^2.2.1"
