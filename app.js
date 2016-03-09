@@ -4,6 +4,34 @@ var app = express();
 var bodyParser = require('body-parser');
 var parseUrlencoded = bodyParser.urlencoded({ extended: false });
 
+app.route('/blocks')
+    .get(function(request, response){
+        if (request.query.limit >= 0) {
+            response.json(blocks.slice(0, request.query.limit));
+        }else {
+            response.json(Object.keys(blocks));
+        }
+    })
+    .post(parseUrlencoded, function(request, response){
+        var newBlock = request.body;
+        blocks[newBlock.name] = newBlock.description; // <input name='name'><input name='description'>
+
+        response.status(201).json(newBlock.name);
+    });
+app.route('/blocks/:name')
+    .get(function(request, response){
+        var description = blocks[request.blockName];
+        if (!description) {
+            response.status(404).json('No description found for ' + request.params.name);
+        }else{
+            response.json(description);
+        }
+    })
+    .delete(function(request, response){
+        delete blocks[request.blockName];
+        response.sendStatus(200); //sets response body to 'OK'
+    });
+
 var logger = require('./logger');
 app.use(logger);
 app.use(express.static('public'));
@@ -22,15 +50,6 @@ var locations = {
     'Rotating': 'Penthouse'
 };
 
-// Middleware 'body-parser'.  Used to handel <form> data
-app.post('/blocks', parseUrlencoded, function(request, response){
-    var newBlock = request.body;
-    blocks[newBlock.name] = newBlock.description; // <input name='name'><input name='description'>
-
-    response.status(201).json(newBlock.name);
-});
-
-
 // Post checks
 app.param('name', function(request, response, next){
     var name = request.params.name;
@@ -39,25 +58,6 @@ app.param('name', function(request, response, next){
     request.blockName = block;
 
     next();
-});
-
-// Check block size
-app.get('/blocks', function(request, response){
-    if (request.query.limit >= 0) {
-        response.json(blocks.slice(0, request.query.limit));
-    }else {
-        response.json(Object.keys(blocks));
-    }
-});
-
-// Get block name and location name
-app.get('/blocks/:name', function(request, response) {
-    var description = blocks[request.blockName];
-    if (!description) {
-        response.status(404).json('No description found for ' + request.params.name);
-    }else{
-        response.json(description);
-    }
 });
 
 app.get('/locations/:name', function(request, response){
@@ -69,9 +69,6 @@ app.get('/locations/:name', function(request, response){
     }
 });
 
-
 app.listen(3000, function() {
-    // curl http://localhost:3000/
-    // curl -i http://localhost:3000/blocks
     console.log('listening on port 3000');
 });

@@ -9,7 +9,8 @@ $(function(){
         var content, block;
         for(var i in blocks){
             block = blocks[i];
-            content = '<a href="/blocks/'+block+'">'+block+'</a>';
+            content = '<a href="/blocks/'+block+'">'+block+'</a>' +
+                    '<a href="#" data-block="'+block+'"><img src="images/del.jpg"></a>';
             list.push($('<li>', { html: content }));
         }
         $('.block-list').append(list);
@@ -28,4 +29,21 @@ $(function(){
             form.trigger('reset');
         });
     });
+
+    //Listening for click events
+    $('.block-list').on('click', 'a[data-block]', function(even){
+
+        // Confirm delete
+        if(!confirm('Are you sure?')){
+            return false;
+        }
+        var target = $(event.currentTarget);  //link event that was clicked.
+
+        $.ajax({
+            type: 'DELETE', url: '/blocks/' + target.data('block')
+        }).done(function(){
+            target.parents('li').remove();
+        })
+    });
+
 });
