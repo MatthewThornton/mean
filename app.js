@@ -11,13 +11,11 @@ app.use('/blocks', blocks);
 var logger = require('./logger');
 app.use(logger);
 
-
 var locations = {
     'Fixed': 'First floor',
     'Movable': 'Second floor',
     'Rotating': 'Penthouse'
 };
-
 
 app.get('/locations/:name', function(request, response){
     var location = locations[request.blockName];
